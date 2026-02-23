@@ -129,8 +129,7 @@ namespace ReCoupler
             dialog = SpawnPopupDialog();
             dialog.RTrf.position = ReCouplerWindow;
 
-            if (button != null)
-                button.SetTexture(GameDatabase.Instance.GetTexture(iconPath_off, false));
+            button?.SetTexture(GameDatabase.Instance.GetTexture(iconPath_off, false));
             if (blizzyToolbarButton != null)
                 blizzyToolbarButton.TexturePath = iconPath_blizzy_off;
         }
@@ -144,8 +143,7 @@ namespace ReCoupler
             Destroy(dialog);
             dialog = null;
             UnlockEditor();
-            if (button != null)
-                button.SetTexture(GameDatabase.Instance.GetTexture(iconPath, false));
+            button?.SetTexture(GameDatabase.Instance.GetTexture(iconPath, false));
             if (blizzyToolbarButton != null)
                 blizzyToolbarButton.TexturePath = iconPath_blizzy;
         }
@@ -167,8 +165,7 @@ namespace ReCoupler
                 }
                 if(appLauncherEventSet)
                     GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiApplicationLauncherReady);
-                if (blizzyToolbarButton != null)
-                    blizzyToolbarButton.Destroy();
+                blizzyToolbarButton?.Destroy();
             }
         }
 
@@ -179,8 +176,7 @@ namespace ReCoupler
                 GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiApplicationLauncherReady);
             if (button != null)
                 ApplicationLauncher.Instance.RemoveModApplication(button);
-            if (blizzyToolbarButton != null)
-                blizzyToolbarButton.Destroy();
+            blizzyToolbarButton?.Destroy();
             UnlockEditor();
         }
 
@@ -347,10 +343,12 @@ namespace ReCoupler
                     if (Physics.Raycast(ray, out RaycastHit hit))
                     {
                         Part hitPart = Part.FromGO(hit.transform.gameObject) ?? hit.transform.gameObject.GetComponentInParent<Part>();
+#pragma warning disable IDE0270 // Use coalesce expression
                         if (hitPart == null)
                             hitPart = hit.collider.gameObject.GetComponentUpwards<Part>();
                         if (hitPart == null)
                             hitPart = SelectPartUnderMouse();
+#pragma warning restore IDE0270 // Use coalesce expression
 
                         if (hitPart != null)
                         {
