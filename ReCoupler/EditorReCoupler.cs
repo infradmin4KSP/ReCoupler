@@ -11,7 +11,7 @@ namespace ReCoupler
     {
         public static EditorReCoupler Instance;
 
-        Logger log = new Logger("ReCoupler: EditorReCoupler: ");
+        private static readonly Logger log = new Logger("ReCoupler: EditorReCoupler: ");
         
         public List<AttachNode> openNodes = new List<AttachNode>();
         public List<EditorJointTracker> hiddenNodes = new List<EditorJointTracker>();
@@ -125,7 +125,7 @@ namespace ReCoupler
         {
             for (int i = 0; i < childNodes.Count; i++)
             {
-                EditorJointTracker existingTracker = hiddenNodes.FirstOrDefault((EditorJointTracker jt) => jt.nodes.Contains(parentNode) && jt.nodes.Contains(childNodes[i]));
+                EditorJointTracker existingTracker = hiddenNodes.FirstOrDefault(jt => jt.nodes.Contains(parentNode) && jt.nodes.Contains(childNodes[i]));
                 if (existingTracker == null)
                     hiddenNodes.Add(new EditorJointTracker(parentNode, childNodes[i]));
             }
@@ -235,7 +235,7 @@ namespace ReCoupler
             {
                 for (int i = partsInvolved.Count - 1; i >= 0; i--)
                 {
-                    List<AttachNode> problemNodes = ReCouplerUtils.findProblemNodes(partsInvolved[i]);
+                    List<AttachNode> problemNodes = ReCouplerUtils.FindProblemNodes(partsInvolved[i]);
                     for (int j = problemNodes.Count - 1; j >= 0; j--)
                         problemNodes[j].attachedPart = null;
                 }

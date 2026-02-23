@@ -45,14 +45,14 @@ namespace ReCoupler
         protected Vector2 ReCouplerWindow = new Vector2(-1, -1);
         internal protected List<AbstractJointTracker> jointsInvolved = null;
         public bool appLauncherEventSet = false;
-        private List<Part> highlightedParts = new List<Part>();
+        private readonly List<Part> highlightedParts = new List<Part>();
 
         private static ApplicationLauncherButton button = null;
         internal static IButton blizzyToolbarButton = null;
 
         private PopupDialog dialog = null;
 
-        Logger log = new Logger("ReCouplerGui: ");
+        private static readonly Logger log = new Logger("ReCouplerGui: ");
 
         public void Awake()
         {
@@ -322,7 +322,7 @@ namespace ReCoupler
                 return;
             }
             if (highlightedParts.Count > 0)
-                ResetHighlighting(highlightedParts.FindAll((Part part) => jointsInvolved.All(jt => !jt.parts.Contains(part))));
+                ResetHighlighting(highlightedParts.FindAll(part => jointsInvolved.All(jt => !jt.parts.Contains(part))));
 
             if (_highlightOn || _highlightWasOn)
             {
@@ -413,8 +413,7 @@ namespace ReCoupler
             Ray ray = CamTest.mainCamera.ScreenPointToRay(Input.mousePosition);
             LayerMask RayMask = new LayerMask();
             RayMask = 1 << 0;
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, RayMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, RayMask))
             {
 
                 return FlightGlobals.ActiveVessel.Parts.Find(p => p.gameObject == hit.transform.gameObject);

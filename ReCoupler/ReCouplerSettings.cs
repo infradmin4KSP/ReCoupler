@@ -19,11 +19,6 @@
 
         public static void LoadSettings()
         {
-            float loadedRadius = connectRadius;
-            float loadedAngle = connectAngle;
-            bool loadedAllowRoboJoints = allowRoboJoints;
-            bool loadedAllowKASJoints = allowKASJoints;
-            bool loadedShowGUI = showGUI;
             if (settingsLoaded)
                 return;
 
@@ -34,27 +29,19 @@
                 {
                     if (cfgs[i].url.Equals(configURL))
                     {
-                        if (!float.TryParse(cfgs[i].config.GetValue("connectRadius"), out loadedRadius))
-                            loadedRadius = connectRadius;
-                        else
+                        if (float.TryParse(cfgs[i].config.GetValue("connectRadius"), out float loadedRadius))
                             connectRadius = loadedRadius;
 
-                        if (!float.TryParse(cfgs[i].config.GetValue("connectAngle"), out loadedAngle))
-                            loadedAngle = connectAngle;
-                        else
+                        if (float.TryParse(cfgs[i].config.GetValue("connectAngle"), out float loadedAngle))
                             connectAngle = loadedAngle;
 
-                        if (!bool.TryParse(cfgs[i].config.GetValue("allowRoboJoints"), out loadedAllowRoboJoints))
-                            loadedAllowRoboJoints = allowRoboJoints;
-                        else
+                        if (bool.TryParse(cfgs[i].config.GetValue("allowRoboJoints"), out bool loadedAllowRoboJoints))
                             allowRoboJoints = loadedAllowRoboJoints;
 
-                        if (!bool.TryParse(cfgs[i].config.GetValue("allowKASJoints"), out loadedAllowKASJoints))
-                            loadedAllowKASJoints = allowKASJoints;
-                        else
+                        if (bool.TryParse(cfgs[i].config.GetValue("allowKASJoints"), out bool loadedAllowKASJoints))
                             allowKASJoints = loadedAllowKASJoints;
 
-                        if (!bool.TryParse(cfgs[i].config.GetValue("showGUI"), out loadedShowGUI))
+                        if (!bool.TryParse(cfgs[i].config.GetValue("showGUI"), out bool loadedShowGUI))
                             showGUI = true;
                         else
                             showGUI = loadedShowGUI;
@@ -62,16 +49,12 @@
                     }
                     else if (i == cfgs.Length - 1)
                     {
-                        loadedRadius = connectRadius;
-                        loadedAngle = connectAngle;
                         UnityEngine.Debug.LogWarning("ReCouplerSettings: Couldn't find the correct settings file. Using default values.");
                     }
                 }
             }
             else
             {
-                loadedRadius = connectRadius;
-                loadedAngle = connectAngle;
                 UnityEngine.Debug.LogWarning("ReCouplerSettings: Couldn't find the settings file. Using default values.");
             }
 

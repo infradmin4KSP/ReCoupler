@@ -12,7 +12,7 @@ namespace ReCoupler
     {
         public static FlightReCoupler Instance;
 
-        internal static Logger log = new Logger("ReCoupler: FlightReCoupler: ");
+        private static readonly Logger log = new Logger("ReCoupler: FlightReCoupler: ");
 
         public Dictionary<Vessel, ObservableCollection<FlightJointTracker>> trackedJoints = new Dictionary<Vessel, ObservableCollection<FlightJointTracker>>();
         public List<FlightJointTracker> AllJoints
@@ -31,9 +31,9 @@ namespace ReCoupler
                 return _allJoints;
             }
         }
-        private List<FlightJointTracker> _allJoints = new List<FlightJointTracker>();
+        private readonly List<FlightJointTracker> _allJoints = new List<FlightJointTracker>();
         private bool _dictChanged = false;
-        private Dictionary<int, Coroutine> delayedUpdates = new Dictionary<int, Coroutine>();
+        private readonly Dictionary<int, Coroutine> delayedUpdates = new Dictionary<int, Coroutine>();
         
         public void Awake()
         {
@@ -69,7 +69,7 @@ namespace ReCoupler
 
         private void OnPartDie(Part part)
         {
-            List<FlightJointTracker> jointsWithPart = AllJoints.FindAll((FlightJointTracker jt) => jt.parts.Contains(part));
+            List<FlightJointTracker> jointsWithPart = AllJoints.FindAll(jt => jt.parts.Contains(part));
             for (int i = jointsWithPart.Count - 1; i >= 0; i--)
             {
                 jointsWithPart[i].Destroy();
@@ -127,8 +127,8 @@ namespace ReCoupler
                     }
                     else if (jt.IsTrackingDockingPorts)
                     {
-                        ReCouplerUtils.hasDockingPort(jt.nodes[0], out ModuleDockingNode fromNode);
-                        ReCouplerUtils.hasDockingPort(jt.nodes[1], out ModuleDockingNode toNode);
+                        ReCouplerUtils.HasDockingPort(jt.nodes[0], out ModuleDockingNode fromNode);
+                        ReCouplerUtils.HasDockingPort(jt.nodes[1], out ModuleDockingNode toNode);
                         /*if (dockingNode.state != dockingNode.st_docked_dockee.name &&
                             dockingNode.state != dockingNode.st_docked_docker.name &&
                             dockingNode.state != dockingNode.st_docker_sameVessel.name &&
@@ -342,7 +342,7 @@ namespace ReCoupler
                 vessel = parentNode.owner.vessel;
             for (int i = 0; i < childNodes.Count; i++)
             {
-                FlightJointTracker existingTracker = AllJoints.FirstOrDefault((FlightJointTracker jt) => jt.nodes.Contains(parentNode) && jt.nodes.Contains(childNodes[i]));
+                FlightJointTracker existingTracker = AllJoints.FirstOrDefault(jt => jt.nodes.Contains(parentNode) && jt.nodes.Contains(childNodes[i]));
                 if (existingTracker == null)
                     trackedJoints[vessel].Add(new FlightJointTracker(parentNode, childNodes[i]));
                 else if (!trackedJoints[vessel].Contains(existingTracker))
@@ -436,7 +436,7 @@ namespace ReCoupler
             }
             public bool IsTrackingDockingPorts { get; private set; } = false;
 
-            Logger log;
+            readonly Logger log;
 
             protected List<ModuleDecouple> cachedDecouplers = null;
             private uint[] oldIDs = new uint[2];

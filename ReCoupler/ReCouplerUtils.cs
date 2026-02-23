@@ -25,7 +25,7 @@ namespace ReCoupler
         public static EventData<GameEvents.FromToAction<Part, Part>> onReCouplerEditorJointFormed;
         public static EventData<GameEvents.FromToAction<Part, Part>> onReCouplerEditorJointBroken;
 
-        static Logger log = new Logger("ReCoupler: ReCouplerUtils: ");
+        private static readonly Logger log = new Logger("ReCoupler: ReCouplerUtils: ");
 
         public enum JointType
         {
@@ -51,8 +51,7 @@ namespace ReCoupler
             if (!ReCouplerSettings.settingsLoaded)
                 ReCouplerSettings.LoadSettings();
 
-            List<FlightReCoupler.FlightJointTracker> joints = new List<FlightReCoupler.FlightJointTracker>();
-            foreach (AbstractJointTracker newJoint in checkPartsList(vessel.parts, openNodes, JointType.FlightJointTracker))
+            foreach (AbstractJointTracker newJoint in CheckPartsList(vessel.parts, openNodes, JointType.FlightJointTracker))
             {
                 yield return (FlightReCoupler.FlightJointTracker)newJoint;
             }
@@ -65,30 +64,29 @@ namespace ReCoupler
             if (!ReCouplerSettings.settingsLoaded)
                 ReCouplerSettings.LoadSettings();
 
-            List<EditorReCoupler.EditorJointTracker> joints = new List<EditorReCoupler.EditorJointTracker>();
-            foreach (AbstractJointTracker newJoint in checkPartsList(vessel.parts, openNodes, JointType.EditorJointTracker))
+            foreach (AbstractJointTracker newJoint in CheckPartsList(vessel.parts, openNodes, JointType.EditorJointTracker))
             {
                 yield return (EditorReCoupler.EditorJointTracker)newJoint;
             }
         }
 
-        internal static IEnumerable<AbstractJointTracker> checkPartsList(List<Part> parts, List<AttachNode> openNodes, JointType jointType)
+        internal static IEnumerable<AbstractJointTracker> CheckPartsList(List<Part> parts, List<AttachNode> openNodes, JointType jointType)
         {
             for (int i = 0; i < parts.Count; i++)
             {
-                foreach (AbstractJointTracker newJoint in checkPartNodes(parts[i], openNodes, jointType, false))
+                foreach (AbstractJointTracker newJoint in CheckPartNodes(parts[i], openNodes, jointType, false))
                     yield return newJoint;
             }
         }
 
-        internal static IEnumerable<AbstractJointTracker> checkPartNodes(Part part, List<AttachNode> openNodes, JointType jointType, bool recursive = false)
+        internal static IEnumerable<AbstractJointTracker> CheckPartNodes(Part part, List<AttachNode> openNodes, JointType jointType, bool recursive = false)
         {
-            List<AttachNode> partNodes = findOpenNodes(part);
+            List<AttachNode> partNodes = FindOpenNodes(part);
 
             if (recursive)
             {
                 Part[] children = part.FindChildParts<Part>(true);
-                partNodes.AddRange(findOpenNodes(children));
+                partNodes.AddRange(FindOpenNodes(children));
             }
 
             List<AttachNode> partNodesToAdd = new List<AttachNode>();
@@ -108,7 +106,7 @@ namespace ReCoupler
                 if (doNotJoin)
                     continue;
 
-                AttachNode closestNode = getEligiblePairing(partNodes[i], openNodes, ReCouplerSettings.connectRadius, ReCouplerSettings.connectAngle, ReCouplerSettings.allowRoboJoints, ReCouplerSettings.allowKASJoints);
+                AttachNode closestNode = GetEligiblePairing(partNodes[i], openNodes, ReCouplerSettings.connectRadius, ReCouplerSettings.connectAngle, ReCouplerSettings.allowRoboJoints, ReCouplerSettings.allowKASJoints);
                 if (closestNode != null)
                 {
                     if (jointType == JointType.EditorJointTracker)
@@ -125,7 +123,7 @@ namespace ReCoupler
             openNodes.AddRange(partNodesToAdd);
         }
 
-        public static List<AttachNode> findReCoupledNodes(Part part)
+        public static List<AttachNode> FindReCoupledNodes(Part part)
         {
             List<AttachNode> problemNodes = new List<AttachNode>();
             List<Part> childs = part.FindChildParts<Part>(false).ToList();
@@ -139,7 +137,7 @@ namespace ReCoupler
             return problemNodes;
         }
 
-        public static List<AttachNode> findProblemNodes(Part part)
+        public static List<AttachNode> FindProblemNodes(Part part)
         {
             List<AttachNode> problemNodes = new List<AttachNode>();
             List<Part> childs = part.FindChildParts<Part>(false).ToList();
@@ -153,32 +151,32 @@ namespace ReCoupler
             return problemNodes;
         }
 
-        public static List<AttachNode> findOpenNodes(Vessel vessel)
+        public static List<AttachNode> FindOpenNodes(Vessel vessel)
         {
-            return findOpenNodes(vessel.Parts);
+            return FindOpenNodes(vessel.Parts);
         }
 
-        public static List<AttachNode> findOpenNodes(List<Part> partList)
+        public static List<AttachNode> FindOpenNodes(List<Part> partList)
         {
             List<AttachNode> openNodes = new List<AttachNode>();
             for(int i = 0; i<partList.Count; i++)
             {
-                openNodes.AddRange(findOpenNodes(partList[i]));
+                openNodes.AddRange(FindOpenNodes(partList[i]));
             }
             return openNodes;
         }
 
-        public static List<AttachNode> findOpenNodes(Part[] partList)
+        public static List<AttachNode> FindOpenNodes(Part[] partList)
         {
             List<AttachNode> openNodes = new List<AttachNode>();
             for (int i = 0; i < partList.Length; i++)
             {
-                openNodes.AddRange(findOpenNodes(partList[i]));
+                openNodes.AddRange(FindOpenNodes(partList[i]));
             }
             return openNodes;
         }
 
-        public static List<AttachNode> findOpenNodes(Part part)
+        public static List<AttachNode> FindOpenNodes(Part part)
         {
             List<AttachNode> openNodes = new List<AttachNode>();
             for (int i = 0; i < part.attachNodes.Count; i++)
@@ -255,7 +253,7 @@ namespace ReCoupler
             return openNodes;
         }
 
-        public static AttachNode getEligiblePairing(AttachNode node, List<AttachNode> checkNodes, float radius = ReCouplerSettings.connectRadius_default, float angle = ReCouplerSettings.connectAngle_default, bool allowRoboJoints = ReCouplerSettings.allowRoboJoints_default, bool allowKASJoints = ReCouplerSettings.allowKASJoints_default)
+        public static AttachNode GetEligiblePairing(AttachNode node, List<AttachNode> checkNodes, float radius = ReCouplerSettings.connectRadius_default, float angle = ReCouplerSettings.connectAngle_default, bool allowRoboJoints = ReCouplerSettings.allowRoboJoints_default, bool allowKASJoints = ReCouplerSettings.allowKASJoints_default)
         {
             float closestDist = radius;
             AttachNode closestNode = null;
@@ -266,7 +264,7 @@ namespace ReCoupler
                     continue; // Nodes on the same Part are not eligible.
                 if (node.owner.parent == checkNodes[j].owner || checkNodes[j].owner.parent == node.owner)
                     continue; // Parent-child relationships don't need doubling up.
-                if (ReCouplerGUI.Instance.partPairsToIgnore.Any((Part[] parts) => parts.Contains(node.owner) && parts.Contains(checkNodes[j].owner)))
+                if (ReCouplerGUI.Instance.partPairsToIgnore.Any(parts => parts.Contains(node.owner) && parts.Contains(checkNodes[j].owner)))
                     continue; // This one was told to be ignored.
                 if (HighLogic.LoadedSceneIsEditor && EditorReCoupler.Instance != null)
                 {
@@ -310,8 +308,7 @@ namespace ReCoupler
         {
             try
             {
-                int partsBetween = 0;
-                Part branchPart = FindCommonAncestor(part1, part2, out partsBetween);
+                Part branchPart = FindCommonAncestor(part1, part2, out int partsBetween);
 
                 // Populate Parts list
                 List<Part> partsToCheck = new List<Part>(partsBetween);
@@ -356,9 +353,8 @@ namespace ReCoupler
 
         public static Part FindCommonAncestor(Part part1, Part part2, out int partsBetween)
         {
-            Part rootPart1, rootPart2;
-            int lvlPart1 = FindPartLevel(part1, out rootPart1);
-            int lvlPart2 = FindPartLevel(part2, out rootPart2);
+            int lvlPart1 = FindPartLevel(part1, out Part rootPart1);
+            int lvlPart2 = FindPartLevel(part2, out Part rootPart2);
             partsBetween = 0;
             if (rootPart1 != rootPart2)
             {
@@ -429,10 +425,10 @@ namespace ReCoupler
             if (!allowRoboJoints && (part.Modules.Contains("MuMechToggle")))
                 return true;
             // Accounts for all current joints in Kerbal Attachment System.
-            if (!allowKASJoints && isKASPart(part))
+            if (!allowKASJoints && IsKASPart(part))
                 return true;
             // Accounts for ModuleGrappleNode and all of the Breaking Ground joints and servos.
-            if (!allowRoboJoints && !isKASPart(part)) {
+            if (!allowRoboJoints && !IsKASPart(part)) {
                 var mods =  part.FindModulesImplementing<IJointLockState>();
                 bool haveNonDockingNode = false;
                 for (int i = mods.Count; i-- > 0; ) {
@@ -447,7 +443,7 @@ namespace ReCoupler
             return false;
         }
 
-        private static bool isKASPart(Part part)
+        private static bool IsKASPart(Part part)
         {
             return (part.Modules.Contains("AbstractJoint") || part.Modules.Contains("KASJointCableBase") || part.Modules.Contains("KASJointTwoEndsSphere") || part.Modules.Contains("KASJointTowBar") || part.Modules.Contains("KASJointRigid"));
         }
@@ -467,11 +463,6 @@ namespace ReCoupler
         {
             Vessel srcVessel = srcPart.vessel;
             Vessel trgVessel = trgPart.vessel;
-
-            DockedVesselInfo vesselInfo = new DockedVesselInfo();
-            vesselInfo.name = srcVessel.vesselName;
-            vesselInfo.vesselType = srcVessel.vesselType;
-            vesselInfo.rootPartUId = srcVessel.rootPart.flightID;
 
             GameEvents.onActiveJointNeedUpdate.Fire(srcVessel);
             GameEvents.onActiveJointNeedUpdate.Fire(trgVessel);
@@ -503,10 +494,9 @@ namespace ReCoupler
             }
             GameEvents.onVesselWasModified.Fire(sourceNode.owner.vessel);
 
-            ModuleDockingNode sourcePort, targetPort;
-            if (hasDockingPort(sourceNode, out sourcePort))
+            if (HasDockingPort(sourceNode, out ModuleDockingNode sourcePort))
                 CoupleDockingPortWithPart(sourcePort);
-            if (hasDockingPort(targetNode, out targetPort))
+            if (HasDockingPort(targetNode, out ModuleDockingNode targetPort))
                 CoupleDockingPortWithPart(targetPort);
         }
 
@@ -549,7 +539,7 @@ namespace ReCoupler
             return true;
         }
 
-        public static bool hasDockingPort(AttachNode node, out ModuleDockingNode dockingPort)
+        public static bool HasDockingPort(AttachNode node, out ModuleDockingNode dockingPort)
         {
             dockingPort = node.owner.FindModulesImplementing<ModuleDockingNode>().FirstOrDefault(dockingNode => dockingNode.referenceNode == node);
             return (dockingPort != null);

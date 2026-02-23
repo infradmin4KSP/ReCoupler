@@ -20,7 +20,7 @@ namespace ReCoupler
         private static MethodInfo requestRemoveConnectionsMethod = null;
         private static PropertyInfo InstanceProperty = null;
 
-        private static Logger log = new Logger("CLSCompatibility: ");
+        private static readonly Logger log = new Logger("CLSCompatibility: ");
 
         public static bool IsCLSInstalled
         {
