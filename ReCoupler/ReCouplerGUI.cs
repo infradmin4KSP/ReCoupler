@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using KSP.Localization;
 using KSP.UI.Screens;
 
 namespace ReCoupler
@@ -89,7 +90,7 @@ namespace ReCoupler
                 if (HighLogic.LoadedScene != GameScenes.EDITOR && HighLogic.LoadedScene != GameScenes.FLIGHT) return true;
                 blizzyToolbarButton = ToolbarManager.Instance.add("ReCoupler", "ReCoupler");
                 blizzyToolbarButton.TexturePath = iconPath_blizzy;
-                blizzyToolbarButton.ToolTip = "ReCoupler";
+                blizzyToolbarButton.ToolTip = Localizer.Format("#autoLOC_RCP000");  // "ReCoupler"
                 blizzyToolbarButton.Visible = true;
                 blizzyToolbarButton.OnClick += (e) =>
                 {
@@ -187,9 +188,12 @@ namespace ReCoupler
         {
             List<DialogGUIBase> dialogToDisplay = new List<DialogGUIBase>
             {
-                new DialogGUIToggleButton(()=>_highlightOn, "Show Recoupled Parts", (value) => _highlightOn = value, -1, 30) { OptionInteractableCondition = () => !selectActive },
-                new DialogGUIToggleButton(() => selectActive, "Remove a link", (value) => { selectActive = value; if (selectActive) { _highlightOn = true; LockEditor(); } UnlockEditor(); }, -1, 30),
-                new DialogGUIButton("Reset Links", () =>
+                // "Show Recoupled Parts"
+                new DialogGUIToggleButton(()=>_highlightOn, Localizer.Format("#autoLOC_RCP001"), (value) => _highlightOn = value, -1, 30) { OptionInteractableCondition = () => !selectActive },
+                // "Remove a link"
+                new DialogGUIToggleButton(() => selectActive, Localizer.Format("#autoLOC_RCP002"), (value) => { selectActive = value; if (selectActive) { _highlightOn = true; LockEditor(); } UnlockEditor(); }, -1, 30),
+                // "Reset Links"
+                new DialogGUIButton(Localizer.Format("#autoLOC_RCP003"), () =>
                 {
                    partPairsToIgnore.Clear();
                     if (HighLogic.LoadedSceneIsFlight && FlightReCoupler.Instance != null)
@@ -202,20 +206,26 @@ namespace ReCoupler
                     }
                 }, false),
                 new DialogGUISpace(10),
-                new DialogGUILabel("Settings:", UISkinManager.defaultSkin.window),
+                // "Settings:"
+                new DialogGUILabel(Localizer.Format("#autoLOC_RCP004"), UISkinManager.defaultSkin.window),
                 new DialogGUIHorizontalLayout(TextAnchor.MiddleLeft,
-                    new DialogGUILabel("Acceptable joint radius:", UISkinManager.defaultSkin.toggle, true),
+                    // "Acceptable join radius:"
+                    new DialogGUILabel(Localizer.Format("#autoLOC_RCP005"), UISkinManager.defaultSkin.toggle, true),
                     new DialogGUITextInput(connectRadius_string, false, 5, (s) => connectRadius_string = s, 60, 25),
                     new DialogGUILabel("", 35)
                     ),
                 new DialogGUIHorizontalLayout(TextAnchor.MiddleLeft,
-                    new DialogGUILabel("Acceptable joint angle:", UISkinManager.defaultSkin.toggle, true),
+                    // "Acceptable joint angle:"
+                    new DialogGUILabel(Localizer.Format("#autoLOC_RCP006"), UISkinManager.defaultSkin.toggle, true),
                     new DialogGUITextInput(connectAngle_string, false, 5, (s) => connectAngle_string = s, 60, 25),
                     new DialogGUILabel("", 35)
                     ),
-                new DialogGUIToggle(allowRoboJoints_bool, "Allow Breaking Ground joints between ReCoupler joints", (value) => allowRoboJoints_bool = value),
-                new DialogGUIToggle(allowKASJoints_bool, "Allow KAS joints between ReCoupler joints", (value) => allowKASJoints_bool = value),
-                new DialogGUIButton("Apply", () =>
+                // "Allow Breaking Ground joints between ReCoupler joints"
+                new DialogGUIToggle(allowRoboJoints_bool, Localizer.Format("#autoLOC_RCP007"), (value) => allowRoboJoints_bool = value),
+                // "Allow KAS joints between ReCoupler joints"
+                new DialogGUIToggle(allowKASJoints_bool, Localizer.Format("#autoLOC_RCP008"), (value) => allowKASJoints_bool = value),
+                // "Apply"
+                new DialogGUIButton(Localizer.Format("#autoLOC_RCP009"), () =>
                 {
                     if (float.TryParse(connectRadius_string, out float connectRadius_set))
                         ReCouplerSettings.connectRadius = connectRadius_set;
@@ -228,7 +238,8 @@ namespace ReCoupler
                     else if (HighLogic.LoadedSceneIsFlight && FlightReCoupler.Instance != null)
                         FlightReCoupler.Instance.RegenerateJoints(FlightGlobals.ActiveVessel);
                 }, false),
-                new DialogGUIButton("Close", () =>
+                // "Close"
+                new DialogGUIButton(Localizer.Format("#autoLOC_RCP010"), () =>
                 {
                     if (button != null)
                         button.SetFalse(true);
@@ -243,7 +254,8 @@ namespace ReCoupler
                 dialogToDisplay.RemoveAt(7);
 
             PopupDialog dialog = PopupDialog.SpawnPopupDialog(new Vector2(0, 1), new Vector2(0, 1),
-                new MultiOptionDialog("ReCoupler", "", "ReCoupler", UISkinManager.defaultSkin, new Rect(ReCouplerWindow.x, ReCouplerWindow.y, 250, 150),
+                // "ReCoupler"
+                new MultiOptionDialog(Localizer.Format("#autoLOC_RCP000"), "", Localizer.Format("#autoLOC_RCP000"), UISkinManager.defaultSkin, new Rect(ReCouplerWindow.x, ReCouplerWindow.y, 250, 150),
                     dialogToDisplay.ToArray()),
                 false, UISkinManager.defaultSkin, false);
             dialog.OnDismiss += SaveWindowPosition;
@@ -326,7 +338,8 @@ namespace ReCoupler
             if (selectActive)
             {
                 LockEditor();
-                ScreenMessages.PostScreenMessage("Select a part in the ReCoupler joint for removal with ctrl + left mouseclick", 0.3f, ScreenMessageStyle.UPPER_CENTER);
+                // "Select a part in the ReCoupler joint for removal with ctrl + left mouseclick"
+                ScreenMessages.PostScreenMessage(Localizer.Format("#autoLOC_RCP011"), 0.3f, ScreenMessageStyle.UPPER_CENTER);
                 if (Input.GetKeyUp(KeyCode.Mouse0) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
